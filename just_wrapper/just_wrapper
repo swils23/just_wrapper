@@ -71,3 +71,5 @@ _j_completions() {
 }
 
 complete -F _j_completions just_wrapper
+
+just_wrapper "$@"
