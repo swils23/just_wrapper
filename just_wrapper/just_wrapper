@@ -8,14 +8,11 @@ function just_wrapper() {
 
     case $1 in
         # Default commands provided by just_wrapper plugin
-        update_wrapper)
+        just_wrapper_update)
             bash <(curl -s https://raw.githubusercontent.com/swils23/just_wrapper/main/install_script) $ZSH_CUSTOM
             ;;
-        source)
+        just_wrapper_reload)
             exec $SHELL
-            ;;
-        print_cases)
-            _print_cases
             ;;
         *)
             # Command overrides
