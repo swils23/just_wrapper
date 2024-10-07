@@ -8,7 +8,7 @@
 #     echo "This is an example command with args: $1"
 # }
 
-
+# define functions here
 
 
 # -----------------------------

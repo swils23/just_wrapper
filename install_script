@@ -9,7 +9,7 @@ fi
 ZSH_CUSTOM=$1
 
 DOWNLOAD_LOCATION="https://github.com/swils23/just_wrapper/archive/main.zip"
-JW_PLUGIN_DIR="$ZSH_CUSTOM/plugins/just_wrapper/"
+CUSTOM_PLUGIN_DIR="$ZSH_CUSTOM/plugins/"
 
 # Temporary directory for installation
 current_dir=$(pwd)
@@ -21,15 +21,15 @@ curl -LOks $DOWNLOAD_LOCATION -o main.zip
 unzip -q main.zip
 rm main.zip
 
-if [ -d "$JW_PLUGIN_DIR" ]; then
-    echo "Directory $JW_PLUGIN_DIR already exists. Updating..."
-    rm -rf "$JW_PLUGIN_DIR"
+# Clean Install
+if [ ! -d "$CUSTOM_PLUGIN_DIR/just_wrapper" ]; then
+    mkdir -p $CUSTOM_PLUGIN_DIR/just_wrapper
+    mv just_wrapper-main/just_wrapper/* $CUSTOM_PLUGIN_DIR/just_wrapper
+# Update while preserving user changes
 else
-    echo "Installing just_wrapper plugin..."
+    mv just_wrapper-main/just_wrapper/just_wrapper $CUSTOM_PLUGIN_DIR/just_wrapper
+    mv just_wrapper-main/just_wrapper/just_wrapper.plugin.zsh $CUSTOM_PLUGIN_DIR/just_wrapper
 fi
-mkdir -p "$JW_PLUGIN_DIR"
-# mv just_wrapper-main/just_wrapper "$JW_PLUGIN_DIR"
-cp -r just_wrapper-main/just_wrapper "$JW_PLUGIN_DIR"
 
 # Post-installation cleanup
 cd $current_dir
