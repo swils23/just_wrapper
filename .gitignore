@@ -1,0 +1,2 @@
+just_wrapper/commands/*
+!just_wrapper/commands/.commands
