@@ -1,0 +1,73 @@
+# autoload
+
+function just_wrapper() {
+    if [[ $# -lt 1 ]]; then
+        echo "Usage: just_wrapper <command> [args]"
+        return 1
+    fi
+
+    case $1 in
+        # Default commands provided by just_wrapper plugin
+        update_wrapper)
+            bash <(curl -s https://raw.githubusercontent.com/swils23/just_wrapper/main/install_script)
+            ;;
+        source)
+            exec $SHELL
+            ;;
+        print_cases)
+            _print_cases
+            ;;
+        *)
+            # Command overrides
+            if echo "$JW_COMMANDS" | grep -qw "$1"; then
+                # Set .commands file as executable
+                chmod +x "$JW_COMMANDS_FILE"
+                # Call .commands file with the name of the function and any additional arguments
+                "$JW_COMMANDS_FILE" "$@"
+            
+            # Script overrides
+            elif echo "$JW_SCRIPTS" | grep -qw "$1"; then
+                # Set script as executable
+                chmod +x "$JW_COMMANDS_DIR/$1"
+                # Call script with any additional arguments
+                "$JW_COMMANDS_DIR/$1" "${@:2}"
+            # Fallback to just
+            else
+                just "$@"
+            fi
+            ;;
+    esac
+}
+
+# Function to print out the cases of the 'j' function
+_print_cases() {
+    local jw_default_commands
+    jw_default_commands=$(sed -n '/^function just_wrapper() {/,/esac/p' just_wrapper | grep -E '^\s*[a-zA-Z_][a-zA-Z0-9_]*\)' | sed 's/)//' | tr '\n' ' ' | xargs)
+    echo "$jw_default_commands $JW_SCRIPTS $JW_COMMANDS"
+}
+
+_j_completions() {
+    local cur prev opts just_completions
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+
+    # Custom options
+    opts=$(_print_cases)
+
+    # Get completions from just
+    just_completions=$(just --summary 2>/dev/null)
+
+    # Combine custom options with just completions
+    combined_opts="${opts} ${just_completions}"
+    combined_opts=$(echo $combined_opts | tr ' ' '\n' | sort | uniq | tr '\n' ' ')
+
+    if [[ ${cur} == --* ]]; then
+        COMPREPLY=( $(compgen -W "${combined_opts}" -- ${cur}) )
+    else
+        COMPREPLY=( $(compgen -W "${combined_opts}" -- ${cur}) )
+    fi
+
+    return 0
+}
+
+complete -F _j_completions just_wrapper

@@ -1,0 +1,27 @@
+# Installs just_wrapper plugin for Oh My Zsh
+
+DOWNLOAD_LOCATION="https://github.com/swils23/just_wrapper/archive/main.zip"
+JW_PLUGIN_DIR="$ZSH_CUSTOM/plugins/just_wrapper/"
+
+# Temporary directory for installation
+current_dir=$(pwd)
+mkdir -p /tmp/just_wrapper_install
+cd /tmp/just_wrapper_install
+
+# Download and extract the plugin
+curl -LOks $DOWNLOAD_LOCATION -o main.zip
+unzip main.zip
+rm main.zip
+
+# Move the plugin to the custom plugins directory
+if [ -d "$JW_PLUGIN_DIR" ]; then
+    echo "Directory $JW_PLUGIN_DIR already exists. Updating..."
+    rm -rf "$JW_PLUGIN_DIR"
+fi
+mv just_wrapper-main/just_wrapper "$JW_PLUGIN_DIR"
+
+# Post-installation cleanup
+cd $current_dir
+rm -rf /tmp/just_wrapper_install
+
+echo "*Important* Make sure to add 'just_wrapper' to '.zshrc.plugins'"

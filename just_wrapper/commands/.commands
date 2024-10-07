@@ -1,0 +1,27 @@
+# Define functions in this file to call with `just_wrapper <function_name>`
+
+# Example:
+# function example_command() {
+#     echo "This is an example command"
+# }
+# function example_command_with_args() {
+#     echo "This is an example command with args: $1"
+# }
+
+
+
+
+# -----------------------------
+# DO NOT MODIFY BELOW THIS LINE
+# this lets us call functions from the file without sourcing it
+# -----------------------------
+if [[ $# -lt 1 ]]; then
+    echo "Error: '.commands' called without a function name"
+    exit 1
+elif declare -f "$1" > /dev/null; then
+  # Call the function
+  "$@"
+else
+    echo "Error: Function '$1' not found in '.commands'"
+    exit 1
+fi
