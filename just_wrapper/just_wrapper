@@ -42,7 +42,7 @@ function just_wrapper() {
 # Function to print out the cases of the 'j' function
 _print_cases() {
     local jw_default_commands
-    jw_default_commands=$(sed -n '/^function just_wrapper() {/,/esac/p' just_wrapper | grep -E '^\s*[a-zA-Z_][a-zA-Z0-9_]*\)' | sed 's/)//' | tr '\n' ' ' | xargs)
+    jw_default_commands=$(sed -n '/^function just_wrapper() {/,/esac/p' $ZSH_CUSTOM/plugins/just_wrapper/just_wrapper | grep -E '^\s*[a-zA-Z_][a-zA-Z0-9_]*\)' | sed 's/)//' | tr '\n' ' ' | xargs)
     echo "$jw_default_commands $JW_SCRIPTS $JW_COMMANDS"
 }
 
