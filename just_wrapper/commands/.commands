@@ -1,4 +1,4 @@
-# Define commands in this file to call with `just_wrapper <function_name>`
+# Define functions in this file to call with `just_wrapper <function_name>`
 
 # Example:
 # function example_command() {

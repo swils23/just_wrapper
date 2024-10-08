@@ -27,7 +27,6 @@ if [ ! -d "$CUSTOM_PLUGIN_DIR/just_wrapper" ]; then
     mv just_wrapper-main/just_wrapper/* $CUSTOM_PLUGIN_DIR/just_wrapper
 # Update while preserving user changes
 else
-    mv just_wrapper-main/just_wrapper/just_wrapper $CUSTOM_PLUGIN_DIR/just_wrapper
     mv just_wrapper-main/just_wrapper/just_wrapper.plugin.zsh $CUSTOM_PLUGIN_DIR/just_wrapper
 fi
 
