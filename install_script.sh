@@ -25,6 +25,7 @@ rm main.zip
 if [ ! -d "$CUSTOM_PLUGIN_DIR/just_wrapper" ]; then
     mkdir -p $CUSTOM_PLUGIN_DIR/just_wrapper
     mv just_wrapper-main/just_wrapper/* $CUSTOM_PLUGIN_DIR/just_wrapper
+    chmod +x "$CUSTOM_PLUGIN_DIR/just_wrapper/commands/.commands"
 # Update while preserving user changes
 else
     mv just_wrapper-main/just_wrapper/just_wrapper.plugin.zsh $CUSTOM_PLUGIN_DIR/just_wrapper
@@ -34,4 +35,4 @@ fi
 cd $current_dir
 rm -rf /tmp/just_wrapper_install
 
-echo "*Important* Make sure to add 'just_wrapper' to '.zshrc.plugins'"
+echo "*Important* Make sure to add 'just_wrapper' to plugins in '.zshrc' and reload the shell"

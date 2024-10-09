@@ -101,7 +101,7 @@ This is a custom command
 - [ ] Interactive installer to set up `just_wrapper` and aliases
 - [ ] Versioning
     - [ ] `just --version` or `just just_wrapper_version`
-- [ ] Handle scripts ending in `.sh`
+- [X] Handle scripts ending in `.sh`
 
 See the [open issues](https://github.com/swils23/just_wrapper/issues) for a full list of proposed features (and known issues).
 
