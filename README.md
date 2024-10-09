@@ -9,7 +9,17 @@
 
 
 ## About The Project
-`just_wrapper` is a wrapper for the `just` command in the form of a [custom Zsh plugin](https://github.com/ohmyzsh/ohmyzsh/wiki/Customization#adding-a-new-plugin). This plugin enables the use of custom commands without the need to write, modify, or extend a Justfile. This is useful for adding commands that you don't want to add to a project's Justfile, or for adding global commands that don't require the presence of a Justfile.
+`just_wrapper` is a wrapper for the `just` command in the form of a [custom Zsh plugin](https://github.com/ohmyzsh/ohmyzsh/wiki/Customization#adding-a-new-plugin). This plugin enables the use of custom commands without the need to write, modify, or extend a Justfile. 
+
+### Use Cases
+- **Custom Commands**: Commands specific to your workflow, but don't belong in a project's Justfile
+- **Overriding Commands**: Commands that overwrite ones defined in a project's Justfile to suit your needs
+- **Shortcut Commands**: Commands that simplify or shorten existing commands (e.g. `just tp` for `just test_playwright`)
+- **Roadblocks**: Commands that are used frequently, but project maintainers are hesitant to add to the Justfile
+
+#### Warning: Potential for Lost Wisdom
+
+While `just_wrapper` offers great flexibility, there's a potential downside: **lost wisdom**. If team members add custom commands without sharing them, valuable improvements to a project's `just` commands might be missed. Encourage your team to share useful commands to ensure everyone benefits from collective knowledge.
 
 
 ### Built With
@@ -31,7 +41,7 @@ To install the `just_wrapper` plugin, follow these simple steps.
     ```sh
     bash <(curl -s https://raw.githubusercontent.com/swils23/just_wrapper/main/install_script) "$ZSH_CUSTOM"
     ```
-2. (Optional) Alias `just` to `just_wrapper` by adding the following line in `~/.zshrc`:
+2. (Recommended) Alias `just` to `just_wrapper` by adding the following line in `~/.zshrc`:
     ```sh
     alias just=just_wrapper
     ```
@@ -77,9 +87,9 @@ You can add custom commands to `just_wrapper` in two ways:
 
 - Adding scripts to the commands directory
     
-These can all be called using `just_wrapper <command>`
+These can all be called using `just <command>` (or `just_wrapper <command>` if you didn't alias `just` to `just_wrapper`).
 ```
-~ ➜ just_wrapper custom_command
+~ ➜ just custom_command
 This is a custom command
 ```
 
@@ -90,7 +100,7 @@ This is a custom command
 - [ ] Recursion for nested `just_wrapper` commands
 - [ ] Interactive installer to set up `just_wrapper` and aliases
 - [ ] Versioning
-    - [ ] `just_wrapper --version` or `just_wrapper just_wrapper_version`
+    - [ ] `just --version` or `just just_wrapper_version`
 - [ ] Handle scripts ending in `.sh`
 
 See the [open issues](https://github.com/swils23/just_wrapper/issues) for a full list of proposed features (and known issues).
