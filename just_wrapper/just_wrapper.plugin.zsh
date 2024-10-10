@@ -1,9 +1,6 @@
 JW_COMMANDS_DIR="$ZSH_CUSTOM/plugins/just_wrapper/commands"
 JW_COMMANDS_FILE="$JW_COMMANDS_DIR/.commands"
 
-JW_COMMANDS=$(grep -E '^function[[:space:]]+[a-zA-Z0-9_]+\(\)' "$JW_COMMANDS_FILE" | sed -E 's/^function[[:space:]]+([a-zA-Z0-9_]+)\(\).*/\1/')
-JW_SCRIPTS=$(ls "$JW_COMMANDS_DIR" | grep -v '.commands' | sed 's/\.sh//')
-
 
 function just_wrapper() {
     if [[ $# -lt 1 ]]; then
@@ -40,51 +37,73 @@ function just_wrapper() {
                 just "$@"
                 return
             fi
-            # Command overrides
-            if echo "$JW_COMMANDS" | grep -qw "$1"; then
+            if ! command -v just &> /dev/null; then
+                echo "Just is not installed and no custom command was found for '$1'"
+                return 1
+            fi
+
+            # Call command
+            if _jw_commands | grep -qw "$1"; then
                 "$JW_COMMANDS_FILE" "$@"
-            # Script overrides
+            # Call script
             elif script_name="$JW_COMMANDS_DIR/$1.sh"; [[ -x "$script_name" ]] || script_name="$JW_COMMANDS_DIR/$1"; [[ -x "$script_name" ]]; then
                 chmod +x "$script_name"
                 "$script_name" "${@:2}"
-            # Fallback to just
+            # Call Just (global then local)
             else
-                # Make sure just is installed
-                if ! command -v just &> /dev/null; then
-                    echo "Just is not installed and no custom command was found for '$1'"
-                    return 1
-                fi
-                just "$@"
+                just $(if _global_justfile_recipes | grep -qw "$1"; then echo "-g"; fi) "$@"
             fi
-            ;;
     esac
 }
 
 # region completion
-_print_cases() {
-    local jw_default_commands
-    jw_default_commands=$(sed -n '/^function just_wrapper() {/,/esac/p' $ZSH_CUSTOM/plugins/just_wrapper/just_wrapper.plugin.zsh | grep -E '^\s*[a-zA-Z_][a-zA-Z0-9_]*\)' | sed 's/)//' | tr '\n' ' ' | xargs)
-    echo "$jw_default_commands $JW_SCRIPTS $JW_COMMANDS"
+_local_justfile_recipes() {
+    local recipes
+    recipes=$(just --summary 2>/dev/null)
+    if [[ "$recipes" == $(just -g --summary 2>/dev/null) ]]; then
+        echo ""
+        return
+    fi
+    echo "$recipes"
 }
+
+_global_justfile_recipes() {
+    echo $(just -g --summary 2>/dev/null)
+}
+
+_jw_commands() {
+    echo $(sed -n '/^function just_wrapper() {/,/esac/p' $ZSH_CUSTOM/plugins/just_wrapper/just_wrapper.plugin.zsh \
+    | grep -E '^\s*[a-zA-Z_][a-zA-Z0-9_]*\)' \
+    | sed 's/)//' \
+    | sed 's/^[[:space:]]*//'; grep -E '^function[[:space:]]+[a-zA-Z0-9_]+\(\)' "$JW_COMMANDS_FILE" \
+    | sed -E 's/^function[[:space:]]+([a-zA-Z0-9_]+)\(\).*/\1/' \
+    | sed 's/^[[:space:]]*//')
+}
+
+_jw_scripts() {
+    echo $(ls "$JW_COMMANDS_DIR" | grep -v '.commands' | sed 's/\.sh//')
+}
+
+_print_cases() {
+    local cases
+    cases=$(_jw_commands)
+    cases+=" $(_jw_scripts)"
+    cases+=" $(_local_justfile_recipes)"
+    cases+=" $(_global_justfile_recipes)"
+    cases=$(echo $cases | tr ' ' '\n' | sort | uniq | tr '\n' ' ')
+    echo $cases
+}
+
 _j_completions() {
-    local cur prev opts just_completions
+    local cur prev cases just_completions
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-
-    # Custom options
-    opts=$(_print_cases)
-
-    # Get completions from just
-    just_completions=$(just --summary 2>/dev/null)
-
-    # Combine custom options with just completions
-    combined_opts="${opts} ${just_completions}"
-    combined_opts=$(echo $combined_opts | tr ' ' '\n' | sort | uniq | tr '\n' ' ')
+    cases=$(_print_cases)
 
     if [[ ${cur} == --* ]]; then
-        COMPREPLY=( $(compgen -W "${combined_opts}" -- ${cur}) )
+        COMPREPLY=( $(compgen -W "${cases}" -- ${cur}) )
     else
-        COMPREPLY=( $(compgen -W "${combined_opts}" -- ${cur}) )
+        COMPREPLY=( $(compgen -W "${cases}" -- ${cur}) )
     fi
 
     return 0
