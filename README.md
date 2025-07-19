@@ -1,5 +1,3 @@
-<div align=right>Table of Contents↗️</div>
-
 <div align="center">
     <h3 align="center">Just Wrapper</h3>
     <p align="center">
